@@ -1,0 +1,26 @@
+body {
+    justify-content: center;
+}
+
+#intro-div {
+    justify-content: center;
+    text-align: center;
+    margin-top: 5%;
+}
+
+#intro-next-button {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(0, 111, 119);
+    background-color:rgb(120, 255, 140);
+    margin-top:auto;
+}
+
+
+.int-no-show {
+    display: none;
+}
+
+#name-input {
+    width: 175px;
+}

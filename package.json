@@ -1,0 +1,16 @@
+{
+  "name": "fad",
+  "version": "1.0.0",
+  "description": "- Copying previously made text-based game into interactive web-format.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js -p esmify > bundle.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "browserify": "^17.0.0",
+    "esmify": "^2.1.1"
+  }
+}
