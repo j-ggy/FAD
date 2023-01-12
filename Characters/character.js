@@ -81,68 +81,31 @@ class Character {
             config.activeMob.health -=damage;
             return `You do ${damage} damage and recieved ${dTaken} damage.`
     }
-    // getSpellDamage() { 
-    //     let damage =0;
-    //     let heal =0;
-    //     if (player.activePet) {
-    //         damage += player.activePet.damage;
-    //     } 
-    //     let spellPower = Math.sign(player.activeSpell.power);
-    //         if (spellPower == 1) {
-    //             damage += (player.activeSpell.power - config.activeMob.defense);
-    //             console.log(`You do ${damage} damage`)
+    getSpellDamage(character) { 
+        let damage =0;
+        let heal =0;
+        if (character.activePet) {
+            damage += character.activePet.damage;
+        } 
+        let spellPower = Math.sign(character.activeSpell.power);
+            if (spellPower == 1) {
+                damage += (character.activeSpell.power - config.activeMob.defense);
+                console.log(`You do ${damage} damage`)
                 
-    //             return damage;
-    //         } else if (spellPower == -1) {
-    //             heal -= player.activeSpell.power;
-    //             console.log(`Healed for ${heal} HP`)
-    //             return damage;
-    //         }
-    // }
+                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
 
-    // usePotion() {
-    //     if (player.potions > 0) {
-    //         player.health += 25;
-    //         player.potions -= 1;
-    //     } else {
-    //         console.log("You got no potions.")
-    //     }
-    // }
-    // async equipWeapon() {
-    //     for (let i=0; i < player.weapons.length; i++) {
-    //         console.log(`[${[i]}]:${player.weapons[i].name}`)
-    //     }
-    //     while(true) {
-    //         config.action = Number(await prompt(`Choose a weapon`));
-    //         if (config.action <= player.weapons.length) {
-    //             player.activeWeapon = player.weapons[config.action];
-    //             break;
-    //         } else {
-    //             console.log(config.invalidEntry);
-    //         }
-    //     }
-    //     console.log(player.activeWeapon.name);
-    // }
-    // async equipSpell() {
-    //     if (player.className == config.sorcererClassName) {
-    //         for (let i=0; i < player.spells.length; i++) {
-    //             console.log(`[${[i]}]:${player.spells[i].name}`)
-    //         }
-    //         while(true) {
-    //             config.action = Number(await prompt(`Type the number of the spell:`));
-    //             if (config.action <= player.spells.length) {
-    //                 player.activeSpell = player.spells[config.action];
-    //                 break;
-    //             } else {
-    //                 console.log(config.invalidEntry);
-    //             }
-    //         }
-    //         console.log(player.activeSpell);
-    //     } else {
-    //         console.log(`A ${player.className} can't use spells!`);
-    //     }
+                character.health -= dTaken;
+                config.activeMob.health -=damage;
+                return `You do ${damage} damage and recieved ${dTaken} damage.`
 
-    // }
+            } else if (spellPower == -1) {
+                heal -= character.activeSpell.power;
+                console.log(`Healed for ${heal} HP`)
+                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
+                character.health -= dTaken;
+                return `You heal ${heal} and recieved ${dTaken} damage.`
+            }
+    }
 
     summonPet() {
         this.activePet = this.pets[0];

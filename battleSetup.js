@@ -15,16 +15,17 @@ async function battleSetup (character) {
     config.mobLv += 1;
     console.log(`mob lv: ${config.mobLv}`)
     if (character.health > 0 && config.mobLv === 2) {
-        console.log(config.mobLv)
+        character.levelUp();
+        displayCharInfo(character);
         config.activeMob = summonMob(config.mobLv)
-        console.log(config.activeMob)
         displayMobInfo(config.activeMob);
-        console.log(config.activeMob);
         await fight(character);
         config.mobLv += 1;
         console.log(`mob lv: ${config.mobLv}`)        
     }
     if (character.health > 0 && config.mobLv === 3) {
+        character.levelUp();
+        displayCharInfo(character);
         mob = summonMob(config.mobLv)
         displayMobInfo(config.activeMob);
         await fight(character);
