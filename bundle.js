@@ -59,29 +59,29 @@ class Character {
         str += `Mana: ${this.mana}<br/>`;
         str += `Potions: ${this.potions}<br/>`
         if (this.activeWeapon) {
-            str += `Active Weapon: ${this.activeWeapon}<br/>`
+            str += `Active Weapon: ${this.activeWeapon.name}<br/>`
         }
         if (this.activeSpell) {
-            str += `Active Spell: ${this.activeSpell}<br/>`
+            str += `Active Spell: ${this.activeSpell.name}<br/>`
         }
         if (this.activePet) {
-            str += `Active Pet: ${this.activePet}<br/>`
+            str += `Active Pet: ${this.activePet.name}<br/>`
         }
         return str;
     }
 
-    // getDamage() {
-    //     let damage = player.activeWeapon.damage + player.attack - config.activeMob.defense;
-    //     let dTaken = Math.max(0, config.activeMob.damage - player.defense)
-    //         if (player.activePet) {
-    //             damage += player.activePet.damage;
-    //         }
-    //         console.log(`You do ${damage} damage and recieved ${dTaken} damage.`);
+    getDamage(character, mob) {
+        let damage = Math.max(0, character.activeWeapon.damage + character.attack - config.activeMob.defense);
+        let dTaken = Math.max(0, config.activeMob.damage - character.defense)
+            if (character.activePet) {
+                damage += character.activePet.damage;
+            }
+            console.log(`You do ${damage} damage and recieved ${dTaken} damage.`);
 
-    //         player.health -= dTaken;
-    //         config.activeMob.health -=damage;
-    //         return damage;
-    // }
+            character.health -= dTaken;
+            config.activeMob.health -=damage;
+            return `You do ${damage} damage and recieved ${dTaken} damage.`
+    }
     // getSpellDamage() { 
     //     let damage =0;
     //     let heal =0;
@@ -145,21 +145,10 @@ class Character {
 
     // }
 
-    // async summonPet() {
-    //     for (let i=0; i < player.pets.length; i++) {
-    //         console.log(`[${[i]}]:${player.pets[i].name}`)
-    //     }
-    //     while(true) {
-    //         config.action = Number(await prompt(`Choose a Summon`));
-    //         if (config.action <= player.pets.length) {
-    //             player.activePet = player.pets[config.action];
-    //             break;
-    //         } else {
-    //             console.log(config.invalidEntry);
-    //         }
-    //     }
-    //     console.log(player.activePet.name);
-    // }  
+    summonPet() {
+        this.activePet = this.pets[0];
+        return `Summoned ${this.activePet.name}`
+    }  
 }
 
 module.exports = Character;
@@ -174,6 +163,7 @@ class Hunter extends Character {
     constructor(name) {
         super(name, "Hunter", 4, 2, 3, 150, 100);
         this.weapons.push(bow);
+        this.activeWeapon = bow;
         this.pets.push(cat);
     }
     
@@ -192,6 +182,7 @@ class Sorcerer extends Character {
     constructor(name) {
         super(name, "Sorcerer", 2, 8, 1, 100, 200);
         this.weapons.push(staff);
+        this.activeWeapon = staff;
         this.spells.push(lightning, heal);
         this.pets.push(miniMage);
     }
@@ -205,8 +196,9 @@ const flSword = require("../Pets/floatingSword");
 
 class Swordperson extends Character {
     constructor(name) {
-        super(name, "Swordperson", 7, 1, 2, 125, 40);
+        super(name, "Swordperson", 15, 1, 2, 125, 40);
         this.weapons.push(woodSword);
+        this.activeWeapon = woodSword;
         this.pets.push(flSword);
     }
 }
@@ -228,10 +220,11 @@ class Mob {
     }
     getMobStats() {
         let str = "";
-        str += `Name: ${this.name}`;
-        str += `Attack: ${this.attack} <br/>`;
+        str += `Name: ${this.name} <br/>`;
+        str += `Attack: ${this.damage} <br/>`;
         str += `Defense: ${this.defense}<br/>`;
         str += `Health: ${this.health}<br/>`;
+        return str;
     }
 }
 
@@ -251,7 +244,7 @@ module.exports = panda;
 },{"./mobs":6}],9:[function(require,module,exports){
 const Mob = require("./mobs");
 
-const boulder = new Mob("A Suspicious Boulder", 8, 9, 70);
+const boulder = new Mob("A Suspicious Boulder", 8, 6, 70);
 
 module.exports = boulder;
 },{"./mobs":6}],10:[function(require,module,exports){
@@ -346,18 +339,41 @@ const config = require('./config.js')
 const displayCharInfo = require('./displayCharInfo.js')
 const summonMob = require('./summonMob.js')
 const displayMobInfo = require('./displayMobInfo')
+const fight = require('./fight.js')
 
-function battle (character) {
+async function battleSetup (character) {
     vDiv.style.display = "inline";
-    txtDiv.innerHTML += `<div id="vil-text-1">I'm ${config.charName} the ${config.classChoice} </div>`;
-    let level=1;
-    // let mob = summonMob(level);
     displayCharInfo(character);
-    // displayMobInfo(config.activeMob);
+    config.activeMob = summonMob(config.mobLv);
+    displayMobInfo(config.activeMob);
+    await fight(character);
+    config.mobLv += 1;
+    console.log(`mob lv: ${config.mobLv}`)
+    if (character.health > 0 && config.mobLv === 2) {
+        console.log(config.mobLv)
+        config.activeMob = summonMob(config.mobLv)
+        console.log(config.activeMob)
+        displayMobInfo(config.activeMob);
+        console.log(config.activeMob);
+        await fight(character);
+        config.mobLv += 1;
+        console.log(`mob lv: ${config.mobLv}`)        
+    }
+    if (character.health > 0 && config.mobLv === 3) {
+        mob = summonMob(config.mobLv)
+        displayMobInfo(config.activeMob);
+        await fight(character);
+    }
+
+    if (character.health <= 0) {
+        txtDiv.innerText = "You lost!"
+    } else if (config.activeMob.health <= 0) {
+        txtDiv.innerText = "You won"
+    }
 }
 
-module.exports = battle;
-},{"./config.js":23,"./displayCharInfo.js":24,"./displayMobInfo":25,"./summonMob.js":29}],23:[function(require,module,exports){
+module.exports = battleSetup;
+},{"./config.js":23,"./displayCharInfo.js":24,"./displayMobInfo":25,"./fight.js":26,"./summonMob.js":30}],23:[function(require,module,exports){
 const config =  {
     hunterClassName: "Hunter",
     sorcererClassName: "Sorcerer",
@@ -370,33 +386,84 @@ const config =  {
     activeMob: null,
     mobLv: 1,
     action: null,
-    rng: null
+    rng: null,
+    turn: 1
 }
 
 module.exports = config;
 },{}],24:[function(require,module,exports){
 function displayCharInfo (character) {
     const charInfoDiv = document.getElementById('char-info')
-    let charInfoString = `Name: ${character.name} <br/>`
+    let charInfoString = `<h3>Player:</h3>`
+    charInfoString += `Name: ${character.name} <br/>`
     charInfoString += `Level: ${character.level} ${character.className} <br/>`
     charInfoString += `${character.getStats()} <br/>`
-    charInfoDiv.innerHTML += charInfoString;
+    charInfoDiv.innerHTML = charInfoString;
 }
 
 module.exports = displayCharInfo;
 },{}],25:[function(require,module,exports){
 function displayMobInfo (mob) {
     const mobInfoDiv = document.getElementById('mob-info')
-    let mobInfoString = "";
-    mobInfoString += `${config.activeMob.getStats()} <br/>`
-    mobInfoDiv.innerHTML += mobInfoString;
+    let mobInfoString = `<h3>Monster:</h3>`;
+    mobInfoString += `${mob.getMobStats()} <br/>`
+    mobInfoDiv.innerHTML = mobInfoString;
 }
 
 module.exports = displayMobInfo;
 },{}],26:[function(require,module,exports){
+const displayCharInfo = require("./displayCharInfo")
+const displayMobInfo = require('./displayMobInfo.js')
+const config = require('./config.js')
+
+const txtDiv = document.getElementById('text-response')
+const attackBut = document.getElementById('attack-button')
+const spellBut = document.getElementById('spell-button')
+const petBut = document.getElementById('pet-button')
+const potBut = document.getElementById('potion-button')
+
+function fight (character) {
+    return new Promise((resolve) => {
+        attackBut.addEventListener("click", () => {
+            if (character.health > 0 && config.activeMob.health > 0) {
+                txtDiv.innerText = `Turn ${config.turn}: ${character.getDamage(character)}`
+                displayMobInfo(config.activeMob);
+                displayCharInfo(character);
+                config.turn ++;
+            }
+            if (config.activeMob.health <= 0) {
+                console.log(config.activeMob.health + "health ")
+                txtDiv.innerText = `You beat ${config.activeMob.name}`
+                console.log(config.mobLv)
+                resolve()
+            } else if(character.health <= 0) {
+                txtDiv.innerText = `You lost to ${config.activeMob.name}!`
+                resolve()
+            }
+        })
+        spellBut.addEventListener("click", () => {
+            if (character.className != 'Sorcerer') {
+                txtDiv.innerText = "Only Sorcerer can use spells"
+            } else {
+                txtDiv.innerText = "spell used?"
+            }
+        })
+        petBut.addEventListener("click", () => {
+            txtDiv.innerText = character.summonPet();
+        })
+    
+    
+        
+    })
+
+    
+}
+
+module.exports = fight;
+},{"./config.js":23,"./displayCharInfo":24,"./displayMobInfo.js":25}],27:[function(require,module,exports){
 const intro = require('./intro.js');
 const nameAndClass = require('./nameAndClass');
-const battle = require('./battle.js')
+const battleSetup = require('./battleSetup.js')
 
 let character;
 async function init () {
@@ -407,14 +474,15 @@ async function init () {
 
 async function gameLoop() {
     await init();
-    battle(character);
+    battleSetup(character);
 }
 
 gameLoop();
-},{"./battle.js":22,"./intro.js":27,"./nameAndClass":28}],27:[function(require,module,exports){
+},{"./battleSetup.js":22,"./intro.js":28,"./nameAndClass":29}],28:[function(require,module,exports){
 const intText1 = document.getElementById('inttext-1')
 const intText2 = document.getElementById('inttext-2')
 const intText3 = document.getElementById('inttext-3')
+const intText35 = document.getElementById('inttext-35')
 const intText4 = document.getElementById('inttext-4')
 const intText5 = document.getElementById('inttext-5')
 const name = document.getElementById('name-input')
@@ -422,7 +490,7 @@ const intNextBut = document.getElementById('intro-next-button')
 const submit = document.getElementById('name-submit')
 
 function intro () {
-    const texts = [intText1, intText2, intText3, intText4, intText5] //add text lines to array
+    const texts = [intText1, intText2, intText3, intText35, intText4, intText5] //add text lines to array
     let current=1;
     intNextBut.addEventListener("click",() => {        
         texts.forEach(txt => txt.style.display = 'none'); //cycle through and show as button is pressed ending on name submission
@@ -439,7 +507,7 @@ function intro () {
 }
 
 module.exports = intro;
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 const input = document.getElementById('name-input')
 const submitBut = document.getElementById('name-submit')
 const introDiv = document.getElementById('intro-div')
@@ -482,12 +550,13 @@ function nameAndClass () {
 };
 
 module.exports = nameAndClass;
-},{"./Characters/hunter":2,"./Characters/sorcerer":3,"./Characters/swordperson":4,"./config.js":23}],29:[function(require,module,exports){
+},{"./Characters/hunter":2,"./Characters/sorcerer":3,"./Characters/swordperson":4,"./config.js":23}],30:[function(require,module,exports){
 const justSomeDude = require('./Mobs/justSomeDude.js')
 const rabbit = require('./Mobs/rabbit.js')
 const boulder = require('./Mobs/suspiciousBoulder.js')
 const panda = require('./Mobs/rabidPanda.js')
 const spider = require('./Mobs/tarantula.js')
+const config = require('./config.js')
 
 function summonMob(level) {
     config.rng = Math.random();
@@ -515,4 +584,4 @@ function summonMob(level) {
 }
 
 module.exports = summonMob;
-},{"./Mobs/justSomeDude.js":5,"./Mobs/rabbit.js":7,"./Mobs/rabidPanda.js":8,"./Mobs/suspiciousBoulder.js":9,"./Mobs/tarantula.js":10}]},{},[26]);
+},{"./Mobs/justSomeDude.js":5,"./Mobs/rabbit.js":7,"./Mobs/rabidPanda.js":8,"./Mobs/suspiciousBoulder.js":9,"./Mobs/tarantula.js":10,"./config.js":23}]},{},[27]);

@@ -7,10 +7,11 @@ class Mob {
     }
     getMobStats() {
         let str = "";
-        str += `Name: ${this.name}`;
-        str += `Attack: ${this.attack} <br/>`;
+        str += `Name: ${this.name} <br/>`;
+        str += `Attack: ${this.damage} <br/>`;
         str += `Defense: ${this.defense}<br/>`;
         str += `Health: ${this.health}<br/>`;
+        return str;
     }
 }
 

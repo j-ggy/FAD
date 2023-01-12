@@ -1,6 +1,6 @@
 const intro = require('./intro.js');
 const nameAndClass = require('./nameAndClass');
-const battle = require('./battle.js')
+const battleSetup = require('./battleSetup.js')
 
 let character;
 async function init () {
@@ -11,7 +11,7 @@ async function init () {
 
 async function gameLoop() {
     await init();
-    battle(character);
+    battleSetup(character);
 }
 
 gameLoop();

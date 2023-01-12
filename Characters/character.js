@@ -58,29 +58,29 @@ class Character {
         str += `Mana: ${this.mana}<br/>`;
         str += `Potions: ${this.potions}<br/>`
         if (this.activeWeapon) {
-            str += `Active Weapon: ${this.activeWeapon}<br/>`
+            str += `Active Weapon: ${this.activeWeapon.name}<br/>`
         }
         if (this.activeSpell) {
-            str += `Active Spell: ${this.activeSpell}<br/>`
+            str += `Active Spell: ${this.activeSpell.name}<br/>`
         }
         if (this.activePet) {
-            str += `Active Pet: ${this.activePet}<br/>`
+            str += `Active Pet: ${this.activePet.name}<br/>`
         }
         return str;
     }
 
-    // getDamage() {
-    //     let damage = player.activeWeapon.damage + player.attack - config.activeMob.defense;
-    //     let dTaken = Math.max(0, config.activeMob.damage - player.defense)
-    //         if (player.activePet) {
-    //             damage += player.activePet.damage;
-    //         }
-    //         console.log(`You do ${damage} damage and recieved ${dTaken} damage.`);
+    getDamage(character, mob) {
+        let damage = Math.max(0, character.activeWeapon.damage + character.attack - config.activeMob.defense);
+        let dTaken = Math.max(0, config.activeMob.damage - character.defense)
+            if (character.activePet) {
+                damage += character.activePet.damage;
+            }
+            console.log(`You do ${damage} damage and recieved ${dTaken} damage.`);
 
-    //         player.health -= dTaken;
-    //         config.activeMob.health -=damage;
-    //         return damage;
-    // }
+            character.health -= dTaken;
+            config.activeMob.health -=damage;
+            return `You do ${damage} damage and recieved ${dTaken} damage.`
+    }
     // getSpellDamage() { 
     //     let damage =0;
     //     let heal =0;
@@ -144,21 +144,10 @@ class Character {
 
     // }
 
-    // async summonPet() {
-    //     for (let i=0; i < player.pets.length; i++) {
-    //         console.log(`[${[i]}]:${player.pets[i].name}`)
-    //     }
-    //     while(true) {
-    //         config.action = Number(await prompt(`Choose a Summon`));
-    //         if (config.action <= player.pets.length) {
-    //             player.activePet = player.pets[config.action];
-    //             break;
-    //         } else {
-    //             console.log(config.invalidEntry);
-    //         }
-    //     }
-    //     console.log(player.activePet.name);
-    // }  
+    summonPet() {
+        this.activePet = this.pets[0];
+        return `Summoned ${this.activePet.name}`
+    }  
 }
 
 module.exports = Character;

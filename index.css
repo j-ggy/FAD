@@ -1,5 +1,6 @@
 body {
     justify-content: center;
+    font-size:18px;
 }
 
 #intro-div {
@@ -49,9 +50,18 @@ body {
     text-align: left;
 }
 
-#char {
+#actions {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.action-button {
+    margin: 5px;
 }
 
 #text-response {
+    margin-top: 15px;
     text-align: center;
+    font-style: italic;
 }

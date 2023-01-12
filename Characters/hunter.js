@@ -7,6 +7,7 @@ class Hunter extends Character {
     constructor(name) {
         super(name, "Hunter", 4, 2, 3, 150, 100);
         this.weapons.push(bow);
+        this.activeWeapon = bow;
         this.pets.push(cat);
     }
     

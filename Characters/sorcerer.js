@@ -9,6 +9,7 @@ class Sorcerer extends Character {
     constructor(name) {
         super(name, "Sorcerer", 2, 8, 1, 100, 200);
         this.weapons.push(staff);
+        this.activeWeapon = staff;
         this.spells.push(lightning, heal);
         this.pets.push(miniMage);
     }

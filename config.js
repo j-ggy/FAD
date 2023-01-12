@@ -10,7 +10,8 @@ const config =  {
     activeMob: null,
     mobLv: 1,
     action: null,
-    rng: null
+    rng: null,
+    turn: 1
 }
 
 module.exports = config;

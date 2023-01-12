@@ -3,6 +3,7 @@ const rabbit = require('./Mobs/rabbit.js')
 const boulder = require('./Mobs/suspiciousBoulder.js')
 const panda = require('./Mobs/rabidPanda.js')
 const spider = require('./Mobs/tarantula.js')
+const config = require('./config.js')
 
 function summonMob(level) {
     config.rng = Math.random();
