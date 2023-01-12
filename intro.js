@@ -5,27 +5,23 @@ const intText4 = document.getElementById('inttext-4')
 const intText5 = document.getElementById('inttext-5')
 const name = document.getElementById('name-input')
 const intNextBut = document.getElementById('intro-next-button')
-
+const submit = document.getElementById('name-submit')
 
 function intro () {
-    const texts = [intText1, intText2, intText3, intText4, intText5]
-    let current=0;
+    const texts = [intText1, intText2, intText3, intText4, intText5] //add text lines to array
+    let current=1;
     intNextBut.addEventListener("click",() => {        
-        texts.forEach(txt => txt.style.display = 'none');
+        texts.forEach(txt => txt.style.display = 'none'); //cycle through and show as button is pressed ending on name submission
         texts[current].style.display = "block";
         if ((current + 1) % texts.length == 0) {
             name.style.display = "inline";
-            if (name != null) {
-                console.log(name);
-                return name;
-            }
+            submit.style.display = "inline";
+            intNextBut.style.display = "none";
+
         } else if ((current + 1) % texts.length != 0) {
             current = (current + 1) % texts.length;
         }
     })
 }
-
-
-
 
 module.exports = intro;

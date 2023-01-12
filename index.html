@@ -10,13 +10,31 @@
   <body>
     <div id="intro-div">
         <p id="inttext-1">Welcome Adventurer!</p>
-        <p class="int-no-show" id="inttext-2">Your village is being routinely ransacked by a group of monsters (presumably) led by a dragon.</p>
-        <p class="int-no-show" id="inttext-3">Since the three remaining villagers can hardly defend the town together,<br>
+        <p class="hide-at-start" id="inttext-2">Your village is being routinely ransacked by a group of monsters (presumably) led by a dragon.</p>
+        <p class="hide-at-start" id="inttext-3">Since the three remaining villagers can hardly defend the town together,<br>
           you decide your best chance is to send someone (you) to take out the monsters single-handed. </p>
-        <p class="int-no-show" id="inttext-4">You awake in a flurry, in your haste to get out of bed you hit your head.</p>
-        <p class="int-no-show" id="inttext-5">Ow, that hurt... what am I doing again? Wait... whats my name?!?</p>
-        <input class="int-no-show" id="name-input" type="text" placeholder="Please enter your name..."></input>
+        <p class="hide-at-start" id="inttext-4">You awake in a flurry, in your haste to get out of bed you hit your head.</p>
+        <p class="hide-at-start" id="inttext-5">Ow, that hurt... what am I doing again? Wait... whats my name?!?</p>
+        <input class="hide-at-start" id="name-input" type="text" placeholder="Please enter your name..."></input>
+        <button class="hide-at-start" id="name-submit">Submit</button>
         <button id="intro-next-button" class="next-button">></button>
+    </div>
+
+    <div class="hide-at-start" id="class-div">
+      <p id="class-txt1">That's right... But which item do I take?</p><br>
+      <div id="cbutton-div">
+        <button class="class-buttons" id="hunter-button">Hunter's Loincloth</button>
+        <button class="class-buttons" id="sorcerer-button">Sorcerer Bathrobe</button>
+        <button class="class-buttons" id="swordperson-button">Scabbard</button>
+      </div>
+    </div>
+
+    <div class="hide-at-start" id="main-div">
+      <div id="stats-container">
+        <div id="char-info"></div>
+        <div id="mob-info"></div>
+      </div>
+      <div id="text-response"></div>
     </div>
 
 	<script src="bundle.js"></script>

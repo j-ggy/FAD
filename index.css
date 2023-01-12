@@ -8,19 +8,50 @@ body {
     margin-top: 5%;
 }
 
+#class-div {
+    justify-content: center;
+    text-align: center;
+    margin-top: 5%;
+}
+
 #intro-next-button {
     font-size: 16px;
     font-weight: 500;
     color: rgb(0, 111, 119);
     background-color:rgb(120, 255, 140);
-    margin-top:auto;
 }
 
+#cbutton-div {
+    justify-content: center;
+    margin: 5px;
+}
 
-.int-no-show {
+.class-buttons {
+    margin: 5px;
+}
+
+.hide-at-start {
     display: none;
 }
 
 #name-input {
     width: 175px;
+}
+
+#main-div {
+    justify-content: center;
+    align-items: center;
+}
+
+#stats-container {
+    display: flex;
+    justify-content: space-evenly;
+    text-align: left;
+}
+
+#char {
+}
+
+#text-response {
+    text-align: center;
 }

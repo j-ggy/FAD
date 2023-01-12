@@ -1,8 +1,17 @@
-const intro = require('./intro.js')
+const intro = require('./intro.js');
+const nameAndClass = require('./nameAndClass');
+const battle = require('./battle.js')
+
+let character;
+async function init () {
+    intro(); //plesantries
+    character = await nameAndClass(); //submit name and pick class
+}
 
 
-function gameLoop () {
-    const name = intro(); //Start of story and prompts user to enter name.
+async function gameLoop() {
+    await init();
+    battle(character);
 }
 
 gameLoop();
