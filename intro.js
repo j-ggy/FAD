@@ -7,8 +7,9 @@ const intText5 = document.getElementById('inttext-5')
 const name = document.getElementById('name-input')
 const intNextBut = document.getElementById('intro-next-button')
 const submit = document.getElementById('name-submit')
+const nameAndClass = require('./nameAndClass');
 
-function intro () {
+async function intro () {
     const texts = [intText1, intText2, intText3, intText35, intText4, intText5] //add text lines to array
     let current=1;
     intNextBut.addEventListener("click",() => {        
@@ -23,6 +24,11 @@ function intro () {
             current = (current + 1) % texts.length;
         }
     })
+    character = await nameAndClass();
+    return new Promise((resolve) => { //submit name and pick class
+        resolve(character)
+    })
+    
 }
 
 module.exports = intro;

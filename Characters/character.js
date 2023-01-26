@@ -69,18 +69,14 @@ class Character {
         return str;
     }
 
-    getDamage(character, mob) {
-        let damage = Math.max(0, character.activeWeapon.damage + character.attack - config.activeMob.defense);
-        let dTaken = Math.max(0, config.activeMob.damage - character.defense)
-            if (character.activePet) {
-                damage += character.activePet.damage;
-            }
-            console.log(`You do ${damage} damage and recieved ${dTaken} damage.`);
-
-            character.health -= dTaken;
-            config.activeMob.health -=damage;
-            return `You do ${damage} damage and recieved ${dTaken} damage.`
+    getDamage() {
+        let damage = Math.max(0, this.activeWeapon.damage + this.attack - config.activeMob.defense);
+        if (this.activePet) {
+            damage += this.activePet.damage;
+        }
+        return damage;
     }
+
     getSpellDamage(character) { 
         let damage =0;
         let heal =0;
@@ -100,9 +96,10 @@ class Character {
 
             } else if (spellPower == -1) {
                 heal -= character.activeSpell.power;
+                console.log(character.activeSpell.power)
                 console.log(`Healed for ${heal} HP`)
                 let dTaken = Math.max(0, config.activeMob.damage - character.defense)
-                character.health -= dTaken;
+                character.health -= dTaken-heal;
                 return `You heal ${heal} and recieved ${dTaken} damage.`
             }
     }

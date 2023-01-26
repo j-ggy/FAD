@@ -11,7 +11,7 @@ const Hunter = require("./Characters/hunter");
 const Swordperson = require("./Characters/swordperson");
 const Sorcerer = require("./Characters/sorcerer");
 
-function nameAndClass () {
+async function nameAndClass () {
     submitBut.addEventListener("click", () => {
         if (input.value.length > 0) {
             config.charName  = input.value;

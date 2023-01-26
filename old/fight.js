@@ -1,12 +1,9 @@
-const displayCharInfo = require("./displayCharInfo")
-const displayMobInfo = require('./displayMobInfo.js')
-const config = require('./config.js')
+const displayCharInfo = require("../displayCharInfo")
+const displayMobInfo = require('../displayMobInfo.js')
+
 
 const txtDiv = document.getElementById('text-response')
-const attackBut = document.getElementById('attack-button')
-const spellBut = document.getElementById('spell-button')
-const petBut = document.getElementById('pet-button')
-const potBut = document.getElementById('potion-button')
+
 const spellActions = document.getElementById('spell-actions')
 const useSpell = document.getElementById('use-spell')
 const changeSpell = document.getElementById('change-spell')
@@ -54,18 +51,7 @@ function fight (character) {
             displayCharInfo(character);
             spellActions.style.display = "none";
         })
-        petBut.addEventListener("click", () => {
-            txtDiv.innerText = character.summonPet();
-            displayCharInfo(character)
-        })
-        potBut.addEventListener("click", () => {
-            if (character.potions > 0) {
-                character.health += 20;
-                character.potions -= 1;
-                txtDiv.innerText = "Used a potion!"
-                displayCharInfo(character);
-            }
-        })      
+     
     })    
 }
 
