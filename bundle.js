@@ -72,35 +72,35 @@ class Character {
 
     getDamage() {
         let damage = Math.max(0, this.activeWeapon.damage + this.attack - config.activeMob.defense);
-        if (this.activePet) {
-            damage += this.activePet.damage;
-        }
-        return damage;
+        let dTaken = Math.max(0, config.activeMob.damage - this.defense)
+            if (this.activePet) {
+                damage += this.activePet.damage;
+            }
+            config.activeMob.health = Math.max(0, config.activeMob.health - damage);
+            this.health = Math.max(0, this.health - dTaken);
+            return `You do ${damage} damage and recieved ${dTaken} damage.`
     }
 
-    getSpellDamage(character) { 
+    getSpellDamage() { 
         let damage =0;
         let heal =0;
-        if (character.activePet) {
-            damage += character.activePet.damage;
+        if (this.activePet) {
+            damage += this.activePet.damage;
         } 
-        let spellPower = Math.sign(character.activeSpell.power);
+        let spellPower = Math.sign(this.activeSpell.power);
             if (spellPower == 1) {
-                damage += (character.activeSpell.power - config.activeMob.defense);
-                console.log(`You do ${damage} damage`)
-                
-                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
+                damage += (this.activeSpell.power - config.activeMob.defense);
+                let dTaken = Math.max(0, config.activeMob.damage - this.defense)
 
-                character.health -= dTaken;
+                this.health -= dTaken;
                 config.activeMob.health -=damage;
                 return `You do ${damage} damage and recieved ${dTaken} damage.`
 
             } else if (spellPower == -1) {
-                heal -= character.activeSpell.power;
-                console.log(character.activeSpell.power)
-                console.log(`Healed for ${heal} HP`)
-                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
-                character.health -= dTaken-heal;
+                heal -= this.activeSpell.power;
+                console.log(this.activeSpell.power)
+                let dTaken = Math.max(0, config.activeMob.damage - this.defense)
+                this.health -= dTaken-heal;
                 return `You heal ${heal} and recieved ${dTaken} damage.`
             }
     }
@@ -109,6 +109,16 @@ class Character {
         this.activePet = this.pets[0];
         return `Summoned ${this.activePet.name}`
     }  
+    usePotion() {
+        if (this.potions > 0) {
+            this.health += 20;
+            this.mana += 10;
+            this.potions -= 1;
+            return `Used a potion to heal 20 hp and 10 mana`
+        } else if (this.potions <= 0) {
+            return `Out of Potions.`
+        }
+    }
 }
 
 module.exports = Character;
@@ -293,32 +303,69 @@ class Weapon {
 
 module.exports = Weapon;
 },{}],22:[function(require,module,exports){
-const config = require('./config.js')
+const config = require('./config');
+const displayCharInfo = require('./displayCharInfo.js')
+const displayMobInfo = require('./displayMobInfo')
+const waitForSpell = require('./waitForSpell.js')
+const summonMob = require('./summonMob.js')
+const responseDiv = document.getElementById('text-response')
+const spellActions = document.getElementById('spell-actions')
+let spellIndex = 1;
 
-function battle() {
-    console.log('made it to battle func')
-    const vDiv = document.getElementById('main-div')
-    const classDiv = document.getElementById('class-div')
-    const responseDiv = document.getElementById('text-response')
-    classDiv.style.display = "none";
-    vDiv.style.display = "inline";
-    while (character.health > 0 && config.activeMob.health > 0) {
-        if (config.activeMob.health <= 0 && config.mobLv <= 2) {
-            console.log('OKAY IT WORKED')
-            config.mobLv++;
-            console.log(config)
+async function battle(choice) {
+    if (choice == "attack") {
+        responseDiv.innerText = character.getDamage();
+    }
+    if (choice == "spell") {
+        if (character.className != 'Sorcerer') {
+            responseDiv.innerText = "Only Sorcerer can use spells"
+        } else {
+            spellActions.style.display = "flex";
+            const spellChoice = await waitForSpell();
+            if (spellChoice == 'use') {
+                if (character.activeSpell) {
+                    if (character.mana >= character.activeSpell.manaCost) {
+                        responseDiv.innerText = character.getSpellDamage();
+                        character.mana -= character.activeSpell.manaCost;
+                    } else {
+                        responseDiv.innerText("Not enough mana!")
+                    }
+                } else {
+                    responseDiv.innerText = 'no active spell!'
+                }
+
+            }
+            else if (spellChoice == 'change') {
+                spellIndex = (spellIndex +1) % character.spells.length;
+                character.activeSpell = character.spells[spellIndex];
+                responseDiv.innerText = `${character.spells[spellIndex].name} equipped`;
+                displayCharInfo(character);
+            }
+            spellActions.style.display = "none";                
+        }
+    }
+    if (choice == "summon") {
+        responseDiv.innerText = character.summonPet();
+    }
+    if (choice == "potion") {
+        responseDiv.innerText = character.usePotion();
+    }
+    if (config.activeMob.health <= 0) {
+        config.mobLv ++;
+        if (config.mobLv != 4) {
+            responseDiv.innerText = `Defeated ${config.activeMob.name} \n & Leveled up!`
+            character.levelUp();
             summonMob(config.mobLv);
             displayCharInfo(character);
             displayMobInfo(config.activeMob);
-        } else if (config.activeMob.health <= 0 && config.mobLv == 3) {
-            console.log('you won')
         }
     }
-    }
-
+    displayCharInfo(character);
+    displayMobInfo(config.activeMob)
+}
 
 module.exports = battle;
-},{"./config.js":23}],23:[function(require,module,exports){
+},{"./config":23,"./displayCharInfo.js":24,"./displayMobInfo":25,"./summonMob.js":30,"./waitForSpell.js":32}],23:[function(require,module,exports){
 const config =  {
     hunterClassName: "Hunter",
     sorcererClassName: "Sorcerer",
@@ -361,21 +408,31 @@ const config = require('./config.js');
 const responseDiv = document.getElementById('text-response')
 const intro = require('./intro.js');
 const setup = require('./setup.js');
-const battle = require('./battle.js');
+const waitForChoice = require('./waitForChoice.js')
+const battle = require('./battle.js')
 let character;
 
 async function gameLoop() {
     character = await intro();
-    console.log(character)
-    await setup();
-    battle();
-    console.log('waited')
+    setup();
+    while(character.health > 0 && config.activeMob.health > 0) {
+        const choice = await waitForChoice();
+        battle(choice);
+        if (config.mobLv === 4) {
+            break;
+        } 
+    }
+    if (character.health <= 0) {
+        responseDiv.innerText = 'You Lose!!'
+    } else if (character.health > 0) {
+        responseDiv.innerText = 'You Won!!'
+    }
 }
 
 gameLoop();
 
 
-},{"./battle.js":22,"./config.js":23,"./intro.js":27,"./setup.js":29}],27:[function(require,module,exports){
+},{"./battle.js":22,"./config.js":23,"./intro.js":27,"./setup.js":29,"./waitForChoice.js":31}],27:[function(require,module,exports){
 const intText1 = document.getElementById('inttext-1')
 const intText2 = document.getElementById('inttext-2')
 const intText3 = document.getElementById('inttext-3')
@@ -454,37 +511,36 @@ async function nameAndClass () {
 
 module.exports = nameAndClass;
 },{"./Characters/hunter":2,"./Characters/sorcerer":3,"./Characters/swordperson":4,"./config.js":23}],29:[function(require,module,exports){
-
 const displayCharInfo = require('./displayCharInfo.js')
 const displayMobInfo = require('./displayMobInfo')
 const summonMob = require('./summonMob.js')
 const config = require('./config.js');
-const attackButt = document.getElementById('attack-button')
-const spellButt = document.getElementById('spell-button')
-const summonButt = document.getElementById('pet-button')
-const potbutt = document.getElementById('potion-button')
-let charDmg, mobDmg;
+const vDiv = document.getElementById('main-div')
+const classDiv = document.getElementById('class-div')
 
-async function setup () {
+function setup () {
     summonMob(config.mobLv);
     displayCharInfo(character);
     displayMobInfo(config.activeMob);
+    classDiv.style.display = "none";
+    vDiv.style.display = "inline";
+    console.log('setup')
 
-    attackButt.addEventListener("click", () => {
-        config.turn ++;
-        charDmg = character.getDamage();
-        mobDmg = Math.max(0, config.activeMob.damage - character.defense);
-        config.activeMob.health -= charDmg;
-        character.health -= mobDmg;
-        displayCharInfo(character);
-        displayMobInfo(config.activeMob);
-        responseDiv.innerText = `You did ${character.getDamage()} damage, and took ${mobDmg} damage.`
-    })
+    // attackButt.addEventListener("click", () => {
+    //     config.turn ++;
+    //     charDmg = character.getDamage();
+    //     mobDmg = Math.max(0, config.activeMob.damage - character.defense);
+    //     config.activeMob.health -= charDmg;
+    //     character.health -= mobDmg;
+    //     displayCharInfo(character);
+    //     displayMobInfo(config.activeMob);
+    //     responseDiv.innerText = `You did ${character.getDamage()} damage, and took ${mobDmg} damage.`
+    // })
 
-    return new Promise((resolve) => {
-        console.log('finished setup')
-        resolve();
-    })
+    // return new Promise((resolve) => {
+    //     console.log('finished setup')
+    //     resolve();
+    // })
 }
 
 
@@ -523,4 +579,44 @@ function summonMob(level) {
 }
 
 module.exports = summonMob;
-},{"./Mobs/justSomeDude.js":5,"./Mobs/rabbit.js":7,"./Mobs/rabidPanda.js":8,"./Mobs/suspiciousBoulder.js":9,"./Mobs/tarantula.js":10,"./config.js":23}]},{},[26]);
+},{"./Mobs/justSomeDude.js":5,"./Mobs/rabbit.js":7,"./Mobs/rabidPanda.js":8,"./Mobs/suspiciousBoulder.js":9,"./Mobs/tarantula.js":10,"./config.js":23}],31:[function(require,module,exports){
+const attackButt = document.getElementById('attack-button')
+const spellButt = document.getElementById('spell-button')
+const summonButt = document.getElementById('pet-button')
+const potButt = document.getElementById('potion-button')
+
+function waitForChoice() {
+    return new Promise((resolve) => {
+        attackButt.addEventListener("click", () => {
+            resolve("attack");
+        })
+        spellButt.addEventListener("click", () => {
+            resolve("spell");
+        })
+        summonButt.addEventListener("click", () => {
+            resolve("summon");
+        })
+        potButt.addEventListener("click", () => {
+            resolve("potion");
+        })
+    })
+}
+
+module.exports = waitForChoice;
+},{}],32:[function(require,module,exports){
+const useSpell = document.getElementById('use-spell')
+const changeSpell = document.getElementById('change-spell')
+
+function waitForSpell() {
+    return new Promise((resolve) => {
+        useSpell.addEventListener("click", () => {
+            resolve('use')
+        })
+        changeSpell.addEventListener("click", () => {
+            resolve('change')
+        })
+    })
+}
+
+module.exports = waitForSpell;
+},{}]},{},[26]);

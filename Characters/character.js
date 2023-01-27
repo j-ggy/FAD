@@ -71,35 +71,35 @@ class Character {
 
     getDamage() {
         let damage = Math.max(0, this.activeWeapon.damage + this.attack - config.activeMob.defense);
-        if (this.activePet) {
-            damage += this.activePet.damage;
-        }
-        return damage;
+        let dTaken = Math.max(0, config.activeMob.damage - this.defense)
+            if (this.activePet) {
+                damage += this.activePet.damage;
+            }
+            config.activeMob.health = Math.max(0, config.activeMob.health - damage);
+            this.health = Math.max(0, this.health - dTaken);
+            return `You do ${damage} damage and recieved ${dTaken} damage.`
     }
 
-    getSpellDamage(character) { 
+    getSpellDamage() { 
         let damage =0;
         let heal =0;
-        if (character.activePet) {
-            damage += character.activePet.damage;
+        if (this.activePet) {
+            damage += this.activePet.damage;
         } 
-        let spellPower = Math.sign(character.activeSpell.power);
+        let spellPower = Math.sign(this.activeSpell.power);
             if (spellPower == 1) {
-                damage += (character.activeSpell.power - config.activeMob.defense);
-                console.log(`You do ${damage} damage`)
-                
-                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
+                damage += (this.activeSpell.power - config.activeMob.defense);
+                let dTaken = Math.max(0, config.activeMob.damage - this.defense)
 
-                character.health -= dTaken;
+                this.health -= dTaken;
                 config.activeMob.health -=damage;
                 return `You do ${damage} damage and recieved ${dTaken} damage.`
 
             } else if (spellPower == -1) {
-                heal -= character.activeSpell.power;
-                console.log(character.activeSpell.power)
-                console.log(`Healed for ${heal} HP`)
-                let dTaken = Math.max(0, config.activeMob.damage - character.defense)
-                character.health -= dTaken-heal;
+                heal -= this.activeSpell.power;
+                console.log(this.activeSpell.power)
+                let dTaken = Math.max(0, config.activeMob.damage - this.defense)
+                this.health -= dTaken-heal;
                 return `You heal ${heal} and recieved ${dTaken} damage.`
             }
     }
@@ -108,6 +108,16 @@ class Character {
         this.activePet = this.pets[0];
         return `Summoned ${this.activePet.name}`
     }  
+    usePotion() {
+        if (this.potions > 0) {
+            this.health += 20;
+            this.mana += 10;
+            this.potions -= 1;
+            return `Used a potion to heal 20 hp and 10 mana`
+        } else if (this.potions <= 0) {
+            return `Out of Potions.`
+        }
+    }
 }
 
 module.exports = Character;
